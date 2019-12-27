@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+const DEFAULT_QUERY = 'redux';
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
+const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
+console.log(url);
+
 var hello = 'Добро пожаловать, снова';
 
 const User = [
@@ -19,27 +26,41 @@ const User = [
   }
 ];
 
-const isSearched = searchTerm => item => (
+/*const isSearched = searchTerm => item => (
   item.fname.toLowerCase().includes(searchTerm.toLowerCase()) //Функция поиска
-)
+)*/
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state={
-      User,
-      searchTerm: '',
+      result: null,
+      searchTerm: DEFAULT_QUERY,
     };
-
+    this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
   }
+  setSearchTopStories(result) {
+    this.setState({ result });
+  }
+  componentDidMount() {
+    const { searchTerm } = this.state;
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+    .then(response => response.json())
+    .then(result => this.setSearchTopStories(result))
+    .catch(error => error);
+  }
+    
   onDismiss(id) {
     const isNotId = item => item.objectID !== id;
-    const updateUser = this.state.User.filter(isNotId);    
-    this.setState({ User: updateUser });
-  };
+    const updatedHits = this.state.result.hits.filter(isNotId);
+    this.setState({  
+      result: { ...this.state.result, hits: updatedHits }
+    });
+  }
+    
   onSearchChange(event) {
     this.setState({ searchTerm: event.target.value });
   }
@@ -47,7 +68,8 @@ class App extends Component {
   
 
   render() {
-    const { searchTerm, User } = this.state;
+    const { searchTerm, result } = this.state;
+    if (!result) { return null; }
     return (
       <div className="page">
         <h2> { hello }</h2>
@@ -60,7 +82,7 @@ class App extends Component {
           </Search>
         </div>
         <Table 
-          User={User}
+          list={result.hits}
           pattern={searchTerm}
           onDismiss={this.onDismiss}
         />
@@ -91,13 +113,13 @@ const largeColumn = {
   };
   
 
-const Table = ({ User, pattern, onDismiss }) =>
+const Table = ({ list, pattern, onDismiss }) =>
   <div className='table'>
-    {User.filter(isSearched(pattern)).map(item => 
+    {list.map(item => 
       <div key={item.objectID} className="table-row">
-        <span style={ midColumn }>{item.fname} </span>
-        <span style={ midColumn }>{item.lname} </span>
-        <span style={ smallColumn }>{item.age}</span>
+        <span style={ largeColumn }>{item.title} </span>
+        <span style={ midColumn }>{item.author} </span>
+        <span style={ smallColumn }>{item.points}</span>
         <span> 
           <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
             Удалить

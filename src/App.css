@@ -72,7 +72,7 @@
   text-overflow: ellipsis;
   padding: 0 5px;
 }
-  .table-row > span {
+.table-row > span {
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 5px;
