@@ -2,34 +2,20 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import axios from 'axios';
 import './App.css';
-
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_HPP = '10';
-
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
-
-
+import Search from './Search';
+import Table from './Table';
+import Button from './Button'
+import {
+  DEFAULT_QUERY,
+  DEFAULT_HPP,
+  PATH_BASE,
+  PATH_SEARCH,
+  PARAM_SEARCH,
+  PARAM_PAGE,
+  PARAM_HPP,
+} from './constants'
 
 var hello = 'Добро пожаловать, снова';
-
-const User = [
-  {
-    fname: 'Kirill',
-    lname: 'Podyachenko',
-    age: 21,
-    objectID: 0,
-  },
-  {
-    fname: 'Alexandra',
-    lname: 'Masyk',
-    age: 19,
-    objectID: 1,
-  }
-];
 
 class App extends Component {
   _isMounted = false;
@@ -56,8 +42,8 @@ class App extends Component {
 
   fetchSearchTopStories(searchTerm, page = 0) {
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
-    .then(result => this._isMounted && this.setSearchTopStories(result.data))
-    .catch(error => this._isMounted && this.setState({ error }));
+      .then(result => this._isMounted && this.setSearchTopStories(result.data))
+      .catch(error => this._isMounted && this.setState({ error }));
   }
     
   onSearchSubmit(event) {
@@ -97,7 +83,7 @@ class App extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    }    
+  }    
     
   onDismiss(id) {
     const { searchKey, results } = this.state;
@@ -152,15 +138,6 @@ class App extends Component {
             Поиск
           </Search>
         </div>
-        { error
-          ? <div className="interactions">
-            <p>Something went wrong.</p>
-          </div>
-          : <Table
-            list={list}
-            onDismiss={this.onDismiss}
-          />
-        }
           <Table 
             list={list}
             onDismiss={this.onDismiss}
@@ -177,53 +154,3 @@ class App extends Component {
 }
 
 export default App;
-
-const Search = ({ value, onChange, onSubmit, children }) =>
-  <form onSubmit={onSubmit}>
-    {children}: <input
-      type="text"
-      value={value}
-      onChange={onChange}
-    />
-    <button type='submit'>
-      {children}
-    </button>
-  </form>
-
-const largeColumn = {
-    width: '40%',
-  };
-  const midColumn = {
-    width: '30%',
-  };
-  const smallColumn = {
-    width: '10%',
-  };
-  
-
-const Table = ({ list, onDismiss }) =>
-  <div className='table'>
-    {list.filter(item => item.title > ' ').map(item => 
-      
-      <div key={item.objectID} className="table-row">
-        <span style={ largeColumn }>{item.title} </span>
-        <span style={ midColumn }>{item.author} </span>
-        <span style={ smallColumn }>{item.points}</span>
-        <span> 
-          <Button onClick={() => onDismiss(item.objectID)} className="button-inline">
-            Удалить
-          </Button>
-        </span>
-      </div>
-    )}
-  </div>
-
-
-const Button = ({ onClick, className = '', children }) =>
-  <button
-    onClick={onClick}
-    className = {className}
-    type = 'button'
-  >
-    {children}
-  </button>
