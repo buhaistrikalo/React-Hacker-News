@@ -19,8 +19,10 @@ import {
 
 var hello = 'Добро пожаловать, снова';
 
+
+
 const Loading = () => 
-  <div>Загрузка...</div>
+  <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 
 class App extends Component {
   _isMounted = false;
