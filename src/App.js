@@ -19,7 +19,13 @@ import {
 
 var hello = 'Добро пожаловать, снова';
 
-
+const withFoo = (Component) => (props) => <Component {...props}/>
+const withLoading = (Component) => ({ isLoading, ...rest }) => 
+  isLoading
+    ? <Loading />
+    : <Component { ...rest } />
+  
+const ButtonWithLoading = withLoading(Button);
 
 const Loading = () => 
   <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -154,15 +160,13 @@ class App extends Component {
             onDismiss={this.onDismiss}
           />
         <div className='interactions'>
-          { isLoading
-            ? <Loading />
-            : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-            Показать больше историй
-            </Button>
-          }
-          
+          <ButtonWithLoading
+            isLoading={isLoading}
+            onClick= {() => this.fetchSearchTopStories(searchKey, page + 1)}
+          >
+          Показать больше историй
+          </ButtonWithLoading>
         </div>
-
       </div>
     );
   }
