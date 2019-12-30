@@ -19,6 +19,9 @@ import {
 
 var hello = 'Добро пожаловать, снова';
 
+const Loading = () => 
+  <div>Загрузка...</div>
+
 class App extends Component {
   _isMounted = false;
   constructor(props) {
@@ -29,6 +32,7 @@ class App extends Component {
       searchKey: '', //Сохранение результата
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false,
     };
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -43,6 +47,7 @@ class App extends Component {
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
+    this.setState({ isLoading: true });
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(result => this._isMounted && this.setSearchTopStories(result.data))
       .catch(error => this._isMounted && this.setState({ error }));
@@ -73,7 +78,8 @@ class App extends Component {
       results: {
         ...results,
         [searchKey]: { hits: updatedHits, page }
-        }        
+        },
+        isLoading: false,
     });
   }
   componentDidMount() {
@@ -111,7 +117,8 @@ class App extends Component {
       searchTerm,
       results,
       searchKey,
-      error
+      error,
+      isLoading,
     } = this.state;
     if (error) {
       return <h1>Что-то не то. Секундочку...</h1>
@@ -145,9 +152,13 @@ class App extends Component {
             onDismiss={this.onDismiss}
           />
         <div className='interactions'>
-          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+          { isLoading
+            ? <Loading />
+            : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
             Показать больше историй
-          </Button>
+            </Button>
+          }
+          
         </div>
 
       </div>
