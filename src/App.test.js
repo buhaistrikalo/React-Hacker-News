@@ -5,19 +5,13 @@ import App, {Search, Button, Table} from './App';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-describe('Search', () => {
-
-  it('отрисовывает без ошибки', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(<Search>Поиск</Search>, div);
-    ReactDOM.unmountComponentAtNode(div);
-  });
-    test('есть корректный снимок', () => {
-    const component = renderer.create(
-      <Search>Поиск</Search>
-    );
-    const tree = component.toJSON();
-    expect(tree).toMatchSnapshot();
-  });
-    
+describe('Table', () => {
+  const props = {
+  list: [
+  { title: '1', author: '1', num_comments: 1, points: 2, objectID: 'y' },
+  { title: '2', author: '2', num_comments: 1, points: 2, objectID: 'z' },
+  ],
+  sortKey: 'TITLE',
+  isSortReverse: false,
+  };  
 });
