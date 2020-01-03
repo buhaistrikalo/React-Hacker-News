@@ -4,9 +4,8 @@ import axios from 'axios';
 import './App.css';
 import Search from './Search';
 import Table from './Table';
-import {sortBy} from 'lodash';
 import Button from './Button';
-import classNames from 'classnames';
+
 
 
 import {
@@ -21,34 +20,6 @@ import {
 
 var hello = 'Добро пожаловать, снова';
 
-const Sort = ({
-  sortKey,
-  activeSortKey,
-  onSort,
-  children
-  }) => {
-    const sortClass = classNames(
-      'button-inline',
-      { 'button-active': sortKey === activeSortKey }
-    );
-  return (
-    <Button
-      onClick={() => onSort(sortKey)}
-      className={sortClass}
-      >
-      {children}
-    </Button>
-  );
-}
-  
-
-const SORTS = {
-  NONE: list => list,
-  TITLE: list => sortBy(list, 'title'),
-  AUTHOR: list => sortBy(list, 'author'),
-  POINTS: list => sortBy(list, 'points').reverse(),
-};
-export { SORTS, Sort };
 //const withFoo = (Component) => (props) => <Component {...props}/>
 const withLoading = (Component) => ({ isLoading, ...rest }) => 
   isLoading
@@ -71,9 +42,6 @@ class App extends Component {
       searchTerm: DEFAULT_QUERY,
       error: null,
       isLoading: false,
-      sortKey: 'NONE',
-      isSortReverse: false,
-
     };
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -81,12 +49,6 @@ class App extends Component {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-    this.onSort = this.onSort.bind(this);
-  }
-
-  onSort(sortKey) {
-    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
-    this.setState({ sortKey, isSortReverse });
   }
 
   needsToSearchTopStories(searchTerm) {
@@ -166,8 +128,6 @@ class App extends Component {
       searchKey,
       error,
       isLoading,
-      sortKey,
-      isSortReverse,
     } = this.state;
     if (error) {
       return <h1>Что-то не то. Секундочку...</h1>
@@ -198,9 +158,6 @@ class App extends Component {
         </div>
           <Table 
             list={list}
-            sortKey = {sortKey}
-            onSort = {this.onSort}
-            isSortReverse={isSortReverse}
             onDismiss={this.onDismiss}
           />
         <div className='interactions'>
